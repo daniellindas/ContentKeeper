@@ -1,0 +1,8 @@
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\ContentKeeperService.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\ContentKeeperService.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\obj\Debug\ContentKeeperService.csprojResolveAssemblyReference.cache
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\obj\Debug\ContentKeeperService.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\obj\Debug\ContentKeeperService.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.Ado.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.SqlServer.dll
