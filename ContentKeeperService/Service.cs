@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ContentKeeperService.Entities;
 using ContentKeeperService.Repository;
-using ContentKeeperService.Repository.SimpleDataAdapter;
+using ContentKeeperService.Repository.DapperAdapter;
 
 namespace ContentKeeperService
 {
@@ -11,7 +11,7 @@ namespace ContentKeeperService
 
         public Service()
         {
-            _repository = new SimpleDataProvider();
+            _repository = new DapperProvider();
         }
 
         public Service(IRepository repository)
@@ -21,12 +21,12 @@ namespace ContentKeeperService
 
         public List<ContentEntry> ListAllContentEntries()
         {
-            return _repository.ListAllContentEntries();
+            return _repository.All();
         }
 
         public ContentEntry GetContentEntryById(string id)
         {
-            return new ContentEntry();
+            return _repository.FirstOrDefault(c => c.Id == id);
         }
 
     }

@@ -1,0 +1,16 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div ng-controller="listAllController">
+    <ul ng-repeat="entry in entries">
+        <li>{{ entry.id }} - {{ entry.content }}</li>
+    </ul>
+</div>
+
+@section scripts
+{
+    <script src="/Scripts/controllers/list-all-controller.js"></script>
+}

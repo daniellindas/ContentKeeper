@@ -61,3 +61,6 @@ C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeepe
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\obj\Debug\ContentKeeper.dll
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\obj\Debug\ContentKeeper.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\bin\Dapper.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\bin\Dapper.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeper\bin\Dapper.xml

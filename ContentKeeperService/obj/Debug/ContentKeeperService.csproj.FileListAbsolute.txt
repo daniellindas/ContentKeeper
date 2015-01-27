@@ -6,3 +6,6 @@ C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeepe
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.Ado.dll
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.dll
 C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Simple.Data.SqlServer.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Dapper.dll
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Dapper.pdb
+C:\Users\Daniel\documents\visual studio 2013\Projects\ContentKeeper\ContentKeeperService\bin\Debug\Dapper.xml
