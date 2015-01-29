@@ -52,12 +52,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\UseThisProperty.cs" />
     <Compile Include="Entities\ContentEntry.cs" />
     <Compile Include="QueryTranslator.cs" />
     <Compile Include="Repository\DapperAdapter\DapperProvider.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Attributes\UseAllProperties.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

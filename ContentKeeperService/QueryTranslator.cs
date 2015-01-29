@@ -1,27 +1,52 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
+using ContentKeeperService.Attributes;
 
 namespace ContentKeeperService
 {
     public class QueryTranslator : ExpressionVisitor
     {
-        private const string SelectClause = "SELECT * FROM ContentEntry ";
+        private string _selectClause = string.Empty;
         private string _whereClause = string.Empty;
-        private string _orderBy = string.Empty;
-        private StringBuilder sb = new StringBuilder();
+        private readonly StringBuilder _sqlBuilder = new StringBuilder();
 
         public string SqlQuery
         {
-            get { return SelectClause + _whereClause; }
+            get { return _selectClause + _whereClause; }
         }
 
-        public void Translate(Expression expression)
+        public void Translate<T>(Expression expression)
         {
-            Visit(expression);
-            _whereClause = "WHERE " + sb.ToString();
+            _selectClause = CreateSelectFromType(typeof(T));
 
+            Visit(expression);
+            _whereClause = " WHERE " + _sqlBuilder;
+
+        }
+
+        private string CreateSelectFromType(Type targetType)
+        {
+            var sql = "SELECT ";
+
+            if (targetType.GetCustomAttribute(typeof (UseAllProperties)) != null)
+                sql += "*";
+            else
+            {
+                var props = targetType.GetProperties()
+                    .Where(p => p.GetCustomAttribute(typeof (UseThisProperty)) != null)
+                    .Select(propertyInfo => propertyInfo.Name)
+                    .ToArray();
+
+                sql += string.Join(", ", props);
+            }
+
+            sql += " FROM " + targetType.Name;
+
+            return sql;
         }
 
         private static Expression StripQuotes(Expression e)
@@ -35,15 +60,14 @@ namespace ContentKeeperService
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
-            if (m.Method.DeclaringType == typeof(Queryable) && m.Method.Name == "Where")
-            {
-                Visit(m.Arguments[0]);
-                var lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
-                Visit(lambda.Body);
-                return m;
-            }
-            
-            throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+            if (m.Method.DeclaringType != typeof (Queryable) || m.Method.Name != "Where")
+                throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+
+
+            Visit(m.Arguments[0]);
+            var lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+            Visit(lambda.Body);
+            return m;
         }
 
         protected override Expression VisitUnary(UnaryExpression u)
@@ -51,11 +75,11 @@ namespace ContentKeeperService
             switch (u.NodeType)
             {
                 case ExpressionType.Not:
-                    sb.Append(" NOT ");
-                    this.Visit(u.Operand);
+                    _sqlBuilder.Append(" NOT ");
+                    Visit(u.Operand);
                     break;
                 case ExpressionType.Convert:
-                    this.Visit(u.Operand);
+                    Visit(u.Operand);
                     break;
                 default:
                     throw new NotSupportedException(string.Format("The unary operator '{0}' is not supported", u.NodeType));
@@ -64,115 +88,90 @@ namespace ContentKeeperService
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        protected override Expression VisitBinary(BinaryExpression b)
+        protected override Expression VisitBinary(BinaryExpression expression)
         {
-            sb.Append("(");
-            this.Visit(b.Left);
+            _sqlBuilder.Append("(");
+            Visit(expression.Left);
 
-            switch (b.NodeType)
+            switch (expression.NodeType)
             {
                 case ExpressionType.And:
-                    sb.Append(" AND ");
-                    break;
-
                 case ExpressionType.AndAlso:
-                    sb.Append(" AND ");
+                    _sqlBuilder.Append(" AND ");
                     break;
 
                 case ExpressionType.Or:
-                    sb.Append(" OR ");
-                    break;
-
                 case ExpressionType.OrElse:
-                    sb.Append(" OR ");
+                    _sqlBuilder.Append(" OR ");
                     break;
 
                 case ExpressionType.Equal:
-                    if (IsNullConstant(b.Right))
-                    {
-                        sb.Append(" IS ");
-                    }
-                    else
-                    {
-                        sb.Append(" = ");
-                    }
+                    _sqlBuilder.Append(IsNullConstant(expression.Right) ? " IS " : " = ");
                     break;
 
                 case ExpressionType.NotEqual:
-                    if (IsNullConstant(b.Right))
-                    {
-                        sb.Append(" IS NOT ");
-                    }
-                    else
-                    {
-                        sb.Append(" <> ");
-                    }
+                    _sqlBuilder.Append(IsNullConstant(expression.Right) ? " IS NOT " : " <> ");
                     break;
 
                 case ExpressionType.LessThan:
-                    sb.Append(" < ");
+                    _sqlBuilder.Append(" < ");
                     break;
 
                 case ExpressionType.LessThanOrEqual:
-                    sb.Append(" <= ");
+                    _sqlBuilder.Append(" <= ");
                     break;
 
                 case ExpressionType.GreaterThan:
-                    sb.Append(" > ");
+                    _sqlBuilder.Append(" > ");
                     break;
 
                 case ExpressionType.GreaterThanOrEqual:
-                    sb.Append(" >= ");
+                    _sqlBuilder.Append(" >= ");
                     break;
 
                 default:
-                    throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", b.NodeType));
+                    throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", expression.NodeType));
 
             }
 
-            Visit(b.Right);
-            sb.Append(")");
-            return b;
+            Visit(expression.Right);
+            _sqlBuilder.Append(")");
+            return expression;
         }
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            IQueryable q = c.Value as IQueryable;
+            var q = c.Value as IQueryable;
 
             if (q == null && c.Value == null)
             {
-                sb.Append("NULL");
+                _sqlBuilder.Append("NULL");
             }
             else if (q == null)
             {
                 switch (Type.GetTypeCode(c.Value.GetType()))
                 {
                     case TypeCode.Boolean:
-                        sb.Append(((bool)c.Value) ? 1 : 0);
+                        _sqlBuilder.Append(((bool)c.Value) ? 1 : 0);
                         break;
 
                     case TypeCode.String:
-                        sb.Append("'");
-                        sb.Append(c.Value);
-                        sb.Append("'");
+                        _sqlBuilder.Append("'");
+                        _sqlBuilder.Append(c.Value);
+                        _sqlBuilder.Append("'");
                         break;
 
                     case TypeCode.DateTime:
-                        sb.Append("'");
-                        sb.Append(c.Value);
-                        sb.Append("'");
+                        _sqlBuilder.Append("'");
+                        _sqlBuilder.Append(c.Value);
+                        _sqlBuilder.Append("'");
                         break;
 
                     case TypeCode.Object:
                         throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
 
                     default:
-                        sb.Append(c.Value);
+                        _sqlBuilder.Append(c.Value);
                         break;
                 }
             }
@@ -182,13 +181,11 @@ namespace ContentKeeperService
 
         protected override Expression VisitMember(MemberExpression m)
         {
-            if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
-            {
-                sb.Append(m.Member.Name);
-                return m;
-            }
+            if (m.Expression == null || m.Expression.NodeType != ExpressionType.Parameter)
+                throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
 
-            throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
+            _sqlBuilder.Append(m.Member.Name);
+            return m;
         }
 
         protected bool IsNullConstant(Expression exp)
@@ -196,6 +193,5 @@ namespace ContentKeeperService
             return (exp.NodeType == ExpressionType.Constant && ((ConstantExpression)exp).Value == null);
         }
 
-        
     }
 }

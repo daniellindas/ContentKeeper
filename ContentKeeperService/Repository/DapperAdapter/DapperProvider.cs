@@ -48,7 +48,7 @@ namespace ContentKeeperService.Repository.DapperAdapter
         public string GetSqlString(Expression<Func<ContentEntry, bool>> expression)
         {
             var translator = new QueryTranslator();
-            translator.Translate(expression);
+            translator.Translate<ContentEntry>(expression);
 
             return translator.SqlQuery;
         }
