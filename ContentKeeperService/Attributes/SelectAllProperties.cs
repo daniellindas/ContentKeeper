@@ -2,7 +2,7 @@
 
 namespace ContentKeeperService.Attributes
 {
-    public class UseAllProperties : Attribute
+    public class SelectAllProperties : Attribute
     {
     }
 }

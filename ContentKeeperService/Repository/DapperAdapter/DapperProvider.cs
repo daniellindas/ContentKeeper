@@ -30,6 +30,20 @@ namespace ContentKeeperService.Repository.DapperAdapter
             return Where(selectionCriteria).FirstOrDefault();
         }
 
+        public List<User> AllUsers(Expression<Func<User, bool>> selectionCriteria)
+        {
+            var connectionsString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            var db = new SqlConnection(connectionsString);
+
+            db.Open();
+
+            var sql = GetSqlString<User>(selectionCriteria);
+
+            var allEntries = db.Query<User>(sql).ToList();
+
+            return allEntries;
+        }
+
         private List<ContentEntry> ListMatchingEntries(Expression<Func<ContentEntry, bool>> selectionCriteria)
         {
             var connectionsString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
@@ -37,7 +51,7 @@ namespace ContentKeeperService.Repository.DapperAdapter
 
             db.Open();
 
-            var sql = GetSqlString(selectionCriteria);
+            var sql = GetSqlString<ContentEntry>(selectionCriteria);
 
             var allEntries = db.Query<ContentEntry>(sql).ToList();
 
@@ -45,10 +59,10 @@ namespace ContentKeeperService.Repository.DapperAdapter
         }
 
 
-        public string GetSqlString(Expression<Func<ContentEntry, bool>> expression)
+        public string GetSqlString<T>(Expression expression)
         {
             var translator = new QueryTranslator();
-            translator.Translate<ContentEntry>(expression);
+            translator.Translate<T>(expression);
 
             return translator.SqlQuery;
         }

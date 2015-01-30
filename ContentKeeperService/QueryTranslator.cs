@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -32,19 +31,19 @@ namespace ContentKeeperService
         {
             var sql = "SELECT ";
 
-            if (targetType.GetCustomAttribute(typeof (UseAllProperties)) != null)
+            if (targetType.GetCustomAttribute(typeof (SelectAllProperties)) != null)
                 sql += "*";
             else
             {
                 var props = targetType.GetProperties()
-                    .Where(p => p.GetCustomAttribute(typeof (UseThisProperty)) != null)
+                    .Where(p => p.GetCustomAttribute(typeof (SelectThisProperty)) != null)
                     .Select(propertyInfo => propertyInfo.Name)
                     .ToArray();
 
                 sql += string.Join(", ", props);
             }
 
-            sql += " FROM " + targetType.Name;
+            sql += " FROM [" + targetType.Name + "]";
 
             return sql;
         }

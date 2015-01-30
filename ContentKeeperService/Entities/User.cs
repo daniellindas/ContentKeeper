@@ -2,12 +2,11 @@
 
 namespace ContentKeeperService.Entities
 {
-
     [UseAllProperties]
-    public class ContentEntry
+    public class User
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
 
-        public string Content { get; set; }
+        public string Name { get; set; }
     }
 }

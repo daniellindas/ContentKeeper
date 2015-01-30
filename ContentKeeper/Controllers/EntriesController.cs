@@ -9,7 +9,7 @@ namespace ContentKeeper.Controllers
 
         public JsonResult ListAll()
         {
-            var entries = _service.ListAllContentEntries();
+            var entries = _service.ListUsers();
 
             return Json(entries, JsonRequestBehavior.AllowGet);
         }

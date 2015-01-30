@@ -24,6 +24,11 @@ namespace ContentKeeperService
             return _repository.All();
         }
 
+        public List<User> ListUsers()
+        {
+            return _repository.AllUsers(u => u.Id != 0);
+        }
+
         public ContentEntry GetContentEntryById(string id)
         {
             return _repository.FirstOrDefault(c => c.Id == id);

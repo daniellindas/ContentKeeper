@@ -10,5 +10,7 @@ namespace ContentKeeperService.Repository
         List<ContentEntry> All();
         List<ContentEntry> Where(Expression<Func<ContentEntry, bool>> selectionCriteria);
         ContentEntry FirstOrDefault(Expression<Func<ContentEntry, bool>> selectionCriteria);
+
+        List<User> AllUsers(Expression<Func<User, bool>> selectionCriteria);
     }
 }
